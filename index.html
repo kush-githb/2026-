@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 Surprise for Radhey</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --accent: #ff69b4; --bg: #000; }
+        body { margin: 0; background: var(--bg); color: white; font-family: -apple-system, sans-serif; overflow: hidden; }
+        .screen { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .active { display: flex; animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* S1: Hold Circle */
+        .hold-box { position: relative; width: 160px; height: 160px; display: flex; justify-content: center; align-items: center; }
+        svg { position: absolute; transform: rotate(-90deg); width: 100%; height: 100%; }
+        .progress { fill: none; stroke: var(--accent); stroke-width: 5; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 0.1s linear; }
+
+        /* S2: White Cards */
+        .stack { position: relative; width: 260px; height: 340px; }
+        .card { 
+            position: absolute; width: 100%; height: 100%; border-radius: 12px;
+            background: #fff; color: #333; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s;
+            border: 1px solid #ddd;
+        }
+        .distraction-text { font-size: 20px; color: #888; margin-top: 10px; font-weight: 500; }
+        .gift-card { background: #fff; z-index: 1; border: 2px solid var(--accent); cursor: pointer; }
+
+        /* S4: Letter Message */
+        .letter { 
+            background: #fdfcf0; color: #222; padding: 35px 25px; border-radius: 4px; 
+            width: 85%; font-family: 'Georgia', serif; line-height: 1.8; text-align: left;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); border: 1px solid #e0e0e0;
+        }
+        .letter-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: #e91e63; }
+    </style>
+</head>
+<body>
+
+    <div id="s1" class="screen active">
+        <h3 style="font-weight: 300; letter-spacing: 1px;">A little surprise for you</h3>
+        <div class="hold-box" id="hZone">
+            <svg viewBox="0 0 150 150"><circle class="progress" id="bar" cx="75" cy="75" r="70"></circle></svg>
+            <span style="font-size: 45px;">🤍</span>
+        </div>
+        <p style="color: #666; font-size: 14px; margin-top: 20px;">Tap and hold the heart</p>
+    </div>
+
+    <div id="s2" class="screen">
+        <h3 style="margin-bottom:30px; font-weight: 400;">Move the distractions aside...</h3>
+        <div class="stack">
+            <div class="card" style="z-index:4" onclick="swipe(this)"><span>💼</span><div class="distraction-text">Work</div></div>
+            <div class="card" style="z-index:3" onclick="swipe(this)"><span>💭</span><div class="distraction-text">Stress</div></div>
+            <div class="card" style="z-index:2" onclick="swipe(this)"><span>📍</span><div class="distraction-text">Distance</div></div>
+            <div class="card gift-card" onclick="goToLetter()">
+                <span style="font-size: 60px;">🎁</span>
+                <p style="color: var(--accent); font-weight: bold; margin-top: 15px;">Tap to Open</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="s4" class="screen">
+        <div class="letter">
+            <div class="letter-header">Happy New year💗</div>
+            <p>May this year brings to you a lot of happiness and joy and Peace in ur life...</p>
+            <p>Just know that this is especially made for you only radhey soo..</p>
+            <p>I am always here for you no matter what, no matter the situation or place or anything cause what Matters is you and all you only💗🧿..</p>
+            <p>May Radha rani protect you and bless you✨</p>
+            <p style="margin-top: 20px; text-align: right;"><b>Keep shining my Sunshine👀✨</b></p>
+        </div>
+    </div>
+
+    <script>
+        let prog = 440;
+        let timer;
+        
+        // Navigation function
+        function showScreen(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('s' + n).classList.add('active');
+        }
+
+        function swipe(el) {
+            el.style.transform = "translate(180%, -30%) rotate(45deg)";
+            el.style.opacity = "0";
+            el.style.pointerEvents = "none";
+        }
+
+        function goToLetter() {
+            confetti({ 
+                particleCount: 150, 
+                spread: 70, 
+                origin: { y: 0.6 }, 
+                colors: ['#ff69b4', '#ffffff'] 
+            });
+            showScreen(4);
+        }
+
+        const hZone = document.getElementById('hZone');
+        const bar = document.getElementById('bar');
+        
+        function start() { 
+            timer = setInterval(() => { 
+                prog -= 8; 
+                bar.style.strokeDashoffset = prog;
+                if(prog <= 0) { 
+                    clearInterval(timer); 
+                    showScreen(2); 
+                }
+            }, 30); 
+        }
+        
+        function stop() { 
+            clearInterval(timer); 
+            prog = 440; 
+            bar.style.strokeDashoffset = 440; 
+        }
+
+        hZone.addEventListener('touchstart', (e) => { e.preventDefault(); start(); });
+        hZone.addEventListener('touchend', stop);
+        hZone.addEventListener('mousedown', start);
+        hZone.addEventListener('mouseup', stop);
+    </script>
+</body>
+</html>
